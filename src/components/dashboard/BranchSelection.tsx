@@ -106,7 +106,7 @@ export const BranchSelection: React.FC<BranchSelectionProps> = ({
           title: 'Select Branch',
           description: 'Choose any branch for this audit finding',
           badgeColor: 'bg-red-100 text-red-800',
-          badgeText: 'Full Access'
+          badgeText: 'IT Auditor Assigned'
         };
       default:
         return {

@@ -1,3 +1,4 @@
+//src/types/user.ts
 import { Branch } from './branch';
 
 export interface User {

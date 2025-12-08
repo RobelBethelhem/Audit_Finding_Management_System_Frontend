@@ -53,24 +53,24 @@ class NotificationService {
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     if (params?.unread_only) queryParams.append('unread_only', params.unread_only.toString());
 
-    const response = await api.get(`/api/notifications?${queryParams.toString()}`);
+    const response = await api.get(`ZAMS/api/notifications?${queryParams.toString()}`);
     return response.data;
   }
 
   // Get notification count for current user
   async getNotificationCount(): Promise<NotificationCountResponse> {
-    const response = await api.get('/api/notifications/count');
+    const response = await api.get('/ZAMS/api/notifications/count');
     return response.data;
   }
 
   // Mark specific notification as read
   async markAsRead(notificationId: string, type: 'assigned' | 'escalation'): Promise<void> {
-    await api.put(`/api/notifications/${notificationId}/read`, { type });
+    await api.put(`/ZAMS/api/notifications/${notificationId}/read`, { type });
   }
 
   // Mark all notifications as read
   async markAllAsRead(): Promise<void> {
-    await api.put('/api/notifications/mark-all-read');
+    await api.put('ZAMS/api/notifications/mark-all-read');
   }
 
   // Get unread notifications only

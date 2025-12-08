@@ -67,7 +67,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
     setError('');
     try {
       // Fetch assignable users from the same department
-      const response = await api.get('/auth/assignable-users_by_branch', {
+      const response = await api.get('/ZAMS/api/auth/assignable-users_by_branch', {
         params: {
           limit: 1000, // Get all assignable users in department
           is_active: true
@@ -95,7 +95,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
     setError('');
 
     try {
-      const response = await api.post('/api/audit-finding-assignments', {
+      const response = await api.post('/ZAMS/api/audit-finding-assignments', {
         finding_id: finding.id,
         assigned_to_id: selectedUserId
       });

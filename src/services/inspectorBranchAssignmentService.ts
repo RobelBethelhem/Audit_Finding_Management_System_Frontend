@@ -47,7 +47,7 @@ export const inspectorBranchAssignmentService = {
       }
 
       const response = await api.get(
-        `/api/inspector-branch-assignments?${params.toString()}`
+        `/ZAMS/api/inspector-branch-assignments?${params.toString()}`
       );
 
       // Debug logging for API service
@@ -66,7 +66,7 @@ export const inspectorBranchAssignmentService = {
   async getById(id: string): Promise<InspectorBranchAssignment> {
     try {
       const response = await api.get(
-        `/api/inspector-branch-assignments/${id}`
+        `/ZAMS/api/inspector-branch-assignments/${id}`
       );
       return response.data.assignment;
     } catch (error) {
@@ -79,7 +79,7 @@ export const inspectorBranchAssignmentService = {
   async create(data: CreateInspectorBranchAssignmentRequest): Promise<AssignmentApiResponse> {
     try {
       const response = await api.post(
-        `/api/inspector-branch-assignments`,
+        `/ZAMS/api/inspector-branch-assignments`,
         data
       );
       return response.data;
@@ -93,7 +93,7 @@ export const inspectorBranchAssignmentService = {
   async update(id: string, data: UpdateInspectorBranchAssignmentRequest): Promise<AssignmentApiResponse> {
     try {
       const response = await api.put(
-        `/api/inspector-branch-assignments/${id}`,
+        `/ZAMS/api/inspector-branch-assignments/${id}`,
         data
       );
       return response.data;
@@ -120,7 +120,7 @@ export const inspectorBranchAssignmentService = {
   async getAvailableInspectors(): Promise<InspectorOption[]> {
     try {
       const response = await api.get(
-        `/api/inspector-branch-assignments/available-inspectors`
+        `/ZAMS/api/inspector-branch-assignments/available-inspectors`
       );
       return response.data.inspectors;
     } catch (error) {
@@ -133,7 +133,7 @@ export const inspectorBranchAssignmentService = {
   async getAvailableBranches(): Promise<BranchOption[]> {
     try {
       const response = await api.get(
-        `/api/inspector-branch-assignments/available-branches`
+        `/ZAMS/api/inspector-branch-assignments/available-branches`
       );
       return response.data.branches;
     } catch (error) {
@@ -146,7 +146,7 @@ export const inspectorBranchAssignmentService = {
   async getByInspectorId(inspectorId: string): Promise<InspectorBranchAssignment[]> {
     try {
       const response = await api.get(
-        `/api/inspector-branch-assignments/inspector/${inspectorId}`
+        `/ZAMS/api/inspector-branch-assignments/inspector/${inspectorId}`
       );
       return response.data.assignments;
     } catch (error) {
@@ -159,7 +159,7 @@ export const inspectorBranchAssignmentService = {
   async getByBranchId(branchId: string): Promise<InspectorBranchAssignment[]> {
     try {
       const response = await api.get(
-        `/api/inspector-branch-assignments/branch/${branchId}`
+        `/ZAMS/api/inspector-branch-assignments/branch/${branchId}`
       );
       return response.data.assignments;
     } catch (error) {

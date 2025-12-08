@@ -38,7 +38,7 @@ export const FilePreview = ({ file, type }: FilePreviewProps) => {
   const fileSize = file.file_size;
 
   // Construct file URL (assuming files are served from /uploads)
-  const fileUrl = filePath ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${filePath}` : null;
+  const fileUrl = filePath ? `${'https://aps2.zemenbank.com/ZAMS/api' || 'https://aps2.zemenbank.com/ZAMS/api'}/${filePath}` : null;
 
   // Handle file download
   const handleDownload = async () => {

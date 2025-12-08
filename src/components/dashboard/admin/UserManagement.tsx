@@ -155,7 +155,7 @@ export const UserManagement = ({ user }: { user: User }) => {
       if (departmentFilter && departmentFilter !== 'all') params.append('department', departmentFilter);
       if (statusFilter && statusFilter !== 'all') params.append('is_active', statusFilter);
       
-      const response = await api.get(`/auth?${params.toString()}`);
+      const response = await api.get(`ZAMS/api/auth?${params.toString()}`);
       setUsers(response.data.data || []);
       setTotalPages(response.data.totalPages || 1);
     } catch (error) {
@@ -170,7 +170,7 @@ export const UserManagement = ({ user }: { user: User }) => {
 
   const fetchSupervisorUsers = async () => {
     try {
-      const response = await api.get('/auth', {
+      const response = await api.get('/ZAMS/api/auth', {
         params: {
           limit: 1000 // Get all users for supervisor selection
         }
@@ -184,7 +184,7 @@ export const UserManagement = ({ user }: { user: User }) => {
 
   const fetchBranches = async () => {
     try {
-      const response = await api.get('/api/branches/active');
+      const response = await api.get('/ZAMS/api/branches/active');
       setBranches(response.data || []);
     } catch (error) {
       console.error('Error fetching branches:', error);
@@ -194,7 +194,7 @@ export const UserManagement = ({ user }: { user: User }) => {
 
   const handleCreateUser = async () => {
     try {
-      await api.post('/auth', formData);
+      await api.post('/ZAMS/api/auth', formData);
       toast.success('User created successfully');
       setIsCreateDialogOpen(false);
       resetForm();
@@ -213,7 +213,7 @@ export const UserManagement = ({ user }: { user: User }) => {
       // Don't send password if it's empty (no change)
       if (!updateData.password) delete updateData.password;
       
-      await api.put(`/auth/${currentUser.id}`, updateData);
+      await api.put(`/ZAMS/api/auth/${currentUser.id}`, updateData);
       toast.success('User updated successfully');
       setIsEditDialogOpen(false);
       resetForm();
@@ -228,7 +228,7 @@ export const UserManagement = ({ user }: { user: User }) => {
     if (!currentUser) return;
     
     try {
-      await api.delete(`/auth/${currentUser.id}`);
+      await api.delete(`ZAMS/api/auth/${currentUser.id}`);
       toast.success('User deleted successfully');
       setIsDeleteDialogOpen(false);
       fetchUsers();
@@ -240,7 +240,7 @@ export const UserManagement = ({ user }: { user: User }) => {
 
   const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
     try {
-      await api.put(`/auth/${userId}`, { is_active: !isActive });
+      await api.put(`/ZAMS/api/auth/${userId}`, { is_active: !isActive });
       toast.success(`User ${isActive ? 'deactivated' : 'activated'} successfully`);
       fetchUsers();
     } catch (error: any) {

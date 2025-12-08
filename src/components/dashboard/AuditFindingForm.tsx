@@ -199,13 +199,13 @@ export const AuditFindingForm = ({
     try {
       console.log('📡 Making API calls to reference data endpoints...');
       const [categoriesRes, riskLevelsRes, riskRatingsRes, vulnerabilitiesRes, complianceGapsRes, standardsRes, businessComplianceGapsRes] = await Promise.all([
-        api.get('/api/reference-data/categories?limit=1000'), // Get all items for dropdowns
-        api.get('/api/reference-data/risk-levels?limit=1000'),
-        api.get('/api/reference-data/risk-ratings?limit=1000'),
-        api.get('/api/reference-data/vulnerabilities?limit=1000'),
-        api.get('/api/reference-data/compliance-gaps?limit=1000'),
-        api.get('/api/reference-data/standards?limit=1000'),
-        api.get('/api/reference-data/business-compliance-gaps?limit=1000')
+        api.get('/ZAMS/api/reference-data/categories?limit=1000'), // Get all items for dropdowns
+        api.get('/ZAMS/api/reference-data/risk-levels?limit=1000'),
+        api.get('/ZAMS/api/reference-data/risk-ratings?limit=1000'),
+        api.get('/ZAMS/api/reference-data/vulnerabilities?limit=1000'),
+        api.get('/ZAMS/api/reference-data/compliance-gaps?limit=1000'),
+        api.get('/ZAMS/api/reference-data/standards?limit=1000'),
+        api.get('/ZAMS/api/reference-data/business-compliance-gaps?limit=1000')
       ]);
       console.log('✅ API calls completed successfully');
 
@@ -259,7 +259,7 @@ export const AuditFindingForm = ({
     const testAPI = async () => {
       try {
         console.log('🧪 Testing API with simple call...');
-        const testResponse = await api.get('/api/reference-data/categories?limit=5');
+        const testResponse = await api.get('/ZAMS/api/reference-data/categories?limit=5');
         console.log('✅ Test API call successful:', testResponse.data);
       } catch (error) {
         console.error('❌ Test API call failed:', error);
@@ -317,7 +317,7 @@ export const AuditFindingForm = ({
 
   const removeExistingFile = async (evidenceId: string) => {
     try {
-      await api.put(`/api/audit-findings/evidence/${evidenceId}/deactivate`);
+      await api.put(`/ZAMS/api/audit-findings/evidence/${evidenceId}/deactivate`);
       const newExistingFiles = existingFiles.filter(file => file.evidence_id !== evidenceId);
       setExistingFiles(newExistingFiles);
 
@@ -335,7 +335,7 @@ export const AuditFindingForm = ({
 
   const downloadFile = async (evidenceId: string, fileName: string) => {
     try {
-      const response = await api.get(`/api/audit-findings/evidence/${evidenceId}/download`, {
+      const response = await api.put(`ZAMS/api/audit-findings/evidence/${evidenceId}/download`, {
         responseType: 'blob'
       });
 
@@ -360,21 +360,29 @@ export const AuditFindingForm = ({
     e.preventDefault();
     
     // Validation
-    if (!formData.title || !formData.description || !formData.criteria || 
+    // if (!formData.title || !formData.description || !formData.criteria || 
+    //     !formData.cause || !formData.impact || !formData.recommendation ||
+    //     !formData.amount || !formData.risk_level_id || !formData.category_id || 
+    //     !formData.risk_rating_id) {
+    //   toast.error('Please fill in all required fields');
+    //   return;
+    // }
+
+     if (!formData.title || !formData.description || !formData.criteria || 
         !formData.cause || !formData.impact || !formData.recommendation ||
-        !formData.amount || !formData.risk_level_id || !formData.category_id || 
+         !formData.category_id || 
         !formData.risk_rating_id) {
       toast.error('Please fill in all required fields');
       return;
     }
 
     // IT Audit specific validation
-    if (permissions.requiresITFields) {
-      if (!formData.vulnerability_id || !formData.compliance_gap_id || !formData.standard_id) {
-        toast.error('IT Audit findings require vulnerability, compliance gap, and standard fields');
-        return;
-      }
-    }
+    // if (permissions.requiresITFields) {
+    //   if (!formData.vulnerability_id || !formData.compliance_gap_id || !formData.standard_id) {
+    //     toast.error('IT Audit findings require vulnerability, compliance gap, and standard fields');
+    //     return;
+    //   }
+    // }
 
     setLoading(true);
     try {
@@ -409,12 +417,12 @@ export const AuditFindingForm = ({
         console.log('🚀 Submitting audit finding with FormData (files included)');
 
         if (isEditing) {
-          response = await api.put(`/api/audit-findings/${finding.id}`, formDataWithFiles, {
+          response = await api.put(`/ZAMS/api/audit-findings/${finding.id}`, formDataWithFiles, {
             headers: { 'Content-Type': 'multipart/form-data' }
           });
           toast.success('Audit finding updated successfully');
         } else {
-          response = await api.post('/api/audit-findings', formDataWithFiles, {
+          response = await api.post('/ZAMS/api/audit-findings', formDataWithFiles, {
             headers: { 'Content-Type': 'multipart/form-data' }
           });
           toast.success('Audit finding created successfully');
@@ -432,10 +440,10 @@ export const AuditFindingForm = ({
         });
 
         if (isEditing) {
-          response = await api.put(`/api/audit-findings/${finding.id}`, submitData);
+          response = await api.put(`/ZAMS/api/audit-findings/${finding.id}`, submitData);
           toast.success('Audit finding updated successfully');
         } else {
-          response = await api.post('/api/audit-findings', submitData);
+          response = await api.post('/ZAMS/api/audit-findings', submitData);
           toast.success('Audit finding created successfully');
         }
 
@@ -527,32 +535,101 @@ export const AuditFindingForm = ({
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Basic Information</h3>
+
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                 <div>
+                  <Label htmlFor="category_id">Category *</Label>
+                  <SearchableCombobox
+                    options={createComboboxOptions(categories || [], 'category_name')}
+                    value={formData.category_id}
+                    onValueChange={(value) => handleInputChange('category_id', value)}
+                    placeholder="Select category"
+                    searchPlaceholder="Search categories..."
+                    emptyText="No categories found"
+                    loading={referenceDataLoading}
+                    disabled={referenceDataLoading}
+                    required
+                  />
+                </div>
+                
                 <div className="md:col-span-2">
-                  <Label htmlFor="title">Title *</Label>
+                  <Label htmlFor="title">Audit Finding *</Label>
                   <Input
                     id="title"
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
-                    placeholder="Enter finding title"
+                    placeholder="Enter finding finding"
                     required
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <Label htmlFor="description">Description *</Label>
+                  <Label htmlFor="description">Audit Finding Description *</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Enter detailed description"
+                    placeholder="Enter detailed audit finding description"
                     rows={4}
                     required
                   />
                 </div>
 
+               
+
+               
                 <div>
+                  <Label htmlFor="criteria">Criteria *</Label>
+                  <Textarea
+                    id="criteria"
+                    value={formData.criteria}
+                    onChange={(e) => handleInputChange('criteria', e.target.value)}
+                    placeholder="Enter audit criteria"
+                    rows={3}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="cause">Cause *</Label>
+                  <Textarea
+                    id="cause"
+                    value={formData.cause}
+                    onChange={(e) => handleInputChange('cause', e.target.value)}
+                    placeholder="Enter root cause"
+                    rows={3}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="impact">Impact *</Label>
+                  <Textarea
+                    id="impact"
+                    value={formData.impact}
+                    onChange={(e) => handleInputChange('impact', e.target.value)}
+                    placeholder="Enter impact description"
+                    rows={3}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="recommendation">Recommendation *</Label>
+                  <Textarea
+                    id="recommendation"
+                    value={formData.recommendation}
+                    onChange={(e) => handleInputChange('recommendation', e.target.value)}
+                    placeholder="Enter recommendations"
+                    rows={3}
+                    required
+                  />
+                </div>
+              
+
+                {/* <div>
                   <Label htmlFor="amount">Amount (ETB) *</Label>
                   <Input
                     id="amount"
@@ -564,7 +641,7 @@ export const AuditFindingForm = ({
                     placeholder="Enter amount"
                     required
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <Label htmlFor="due_date">Due Date</Label>
@@ -700,7 +777,7 @@ export const AuditFindingForm = ({
               <h3 className="text-lg font-medium">Risk Assessment</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
+                {/* <div>
                   <Label htmlFor="category_id">Category *</Label>
                   <SearchableCombobox
                     options={createComboboxOptions(categories || [], 'category_name')}
@@ -713,9 +790,9 @@ export const AuditFindingForm = ({
                     disabled={referenceDataLoading}
                     required
                   />
-                </div>
+                </div> */}
 
-                <div>
+                {/* <div>
                   <Label htmlFor="risk_level_id">Risk Level *</Label>
                   <SearchableCombobox
                     options={createComboboxOptions(riskLevels || [], 'risk_level_name')}
@@ -728,7 +805,7 @@ export const AuditFindingForm = ({
                     disabled={referenceDataLoading}
                     required
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <Label htmlFor="risk_rating_id">Risk Rating *</Label>
@@ -744,11 +821,26 @@ export const AuditFindingForm = ({
                     required
                   />
                 </div>
+
+
+                  <div>
+                  <Label htmlFor="amount">Amount (ETB) </Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                    placeholder="Enter amount"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
             {/* Business Audit Specific Fields */}
-            {!permissions.requiresITFields && (
+            {/* {!permissions.requiresITFields && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Business Audit Information</h3>
                 
@@ -774,11 +866,11 @@ export const AuditFindingForm = ({
                   
                 </div>
               </div>
-            )}
+            )} */}
 
 
 
-
+{/* 
             {permissions.requiresITFields && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">IT Audit Information</h3>
@@ -835,11 +927,15 @@ export const AuditFindingForm = ({
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
+
+
+
+
 
 
             {/* Detailed Analysis */}
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <h3 className="text-lg font-medium">Detailed Analysis</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -891,7 +987,7 @@ export const AuditFindingForm = ({
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Form Actions */}
             {!hideActions && (

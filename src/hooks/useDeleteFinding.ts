@@ -21,7 +21,7 @@ export const useDeleteFinding = (): UseDeleteFindingReturn => {
     setError(null);
 
     try {
-      await api.delete(`/api/audit-findings/${findingId}`);
+      await api.delete(`ZAMS/api/audit-findings/${findingId}`);
       
       console.log('✅ Finding deleted successfully');
       toast.success(

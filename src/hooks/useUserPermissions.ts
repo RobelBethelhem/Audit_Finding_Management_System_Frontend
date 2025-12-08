@@ -31,9 +31,9 @@ export const useUserPermissions = () => {
 
         // Fetch all permission-related data in parallel
         const [assignmentsResponse, responsibilitiesResponse, escalationsResponse] = await Promise.all([
-          api.get('/api/audit-findings/user-assignments'),
-          api.get('/api/action-plans/user-responsibilities'),
-          api.get('/api/audit-findings/user-escalations')
+          api.get('/ZAMS/api/audit-findings/user-assignments'),
+          api.get('/ZAMS/api/action-plans/user-responsibilities'),
+          api.get('/ZAMS/api/audit-findings/user-escalations')
         ]);
 
         setData({

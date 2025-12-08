@@ -171,12 +171,12 @@ export const MultiAuditFindingCreator = ({
       let response;
       if (tab.savedFindingId) {
         // Update existing finding
-        response = await api.put(`/api/audit-findings/${tab.savedFindingId}`, formData, {
+        response = await api.put(`/ZAMS/api/audit-findings/${tab.savedFindingId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {
         // Create new finding
-        response = await api.post('/api/audit-findings', formData, {
+        response = await api.post('/ZAMS/api/audit-findings', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }

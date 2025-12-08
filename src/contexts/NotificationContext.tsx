@@ -1,3 +1,5 @@
+//src/contexts/NotificationContext.tsx
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { notificationService, NotificationData, NotificationCount } from '@/services/notificationService';
 import { useAuth } from '@/hooks/useAuth';

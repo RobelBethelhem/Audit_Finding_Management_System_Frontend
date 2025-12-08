@@ -78,7 +78,7 @@ export const ActionPlansList = ({
         if (value) params.append(key, value.toString());
       });
 
-      const response = await api.get(`/api/action-plans?${params.toString()}`);
+      const response = await api.put(`ZAMS/api/action-plans?${params.toString()}`);
 
       // Handle both array response and paginated response
       let data: ActionPlan[];
@@ -159,7 +159,7 @@ export const ActionPlansList = ({
   // Handle status change
   const handleStatusChange = async (actionPlan: ActionPlan, newStatus: string) => {
     try {
-      await api.put(`/api/action-plans/${actionPlan.action_plan_id}/status`, { status: newStatus });
+      await api.put(`/ZAMS/api/action-plans/${actionPlan.action_plan_id}/status`, { status: newStatus });
       toast.success(`Action plan status updated to ${newStatus.replace('_', ' ')}`);
       fetchActionPlans(); // Refresh data
       if (onChangeStatus) {

@@ -75,12 +75,12 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
     try {
       console.log('📡 Making API calls to reference data endpoints...');
       const [categoriesRes, riskLevelsRes, riskRatingsRes, vulnerabilitiesRes, complianceGapsRes, standardsRes] = await Promise.all([
-        api.get('/api/reference-data/categories?limit=1000'),
-        api.get('/api/reference-data/risk-levels?limit=1000'),
-        api.get('/api/reference-data/risk-ratings?limit=1000'),
-        api.get('/api/reference-data/vulnerabilities?limit=1000'),
-        api.get('/api/reference-data/compliance-gaps?limit=1000'),
-        api.get('/api/reference-data/standards?limit=1000')
+        api.get('/ZAMS/api/reference-data/categories?limit=1000'),
+        api.get('/ZAMS/api/reference-data/risk-levels?limit=1000'),
+        api.get('/ZAMS/api/reference-data/risk-ratings?limit=1000'),
+        api.get('/ZAMS/api/reference-data/vulnerabilities?limit=1000'),
+        api.get('/ZAMS/api/reference-data/compliance-gaps?limit=1000'),
+        api.get('/ZAMS/api/reference-data/standards?limit=1000')
       ]);
       console.log('✅ API calls completed successfully');
 
@@ -134,7 +134,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
     console.log('🔄 Fetching audit finding with ID:', findingId);
     setInitialLoading(true);
     try {
-      const response = await api.get(`/api/audit-findings/${findingId}`);
+      const response = await api.put(`ZAMS/api/audit-findings/${findingId}`);
       const finding = response.data;
       console.log('✅ Audit finding fetched:', finding);
 
@@ -190,7 +190,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
 
   const removeExistingFile = async (evidenceId: string) => {
     try {
-      await api.put(`/api/audit-findings/evidence/${evidenceId}/deactivate`);
+      await api.put(`/ZAMS/api/audit-findings/evidence/${evidenceId}/deactivate`);
       // Refresh the files list to ensure consistency
       await refreshExistingFiles(findingId);
       toast.success('File removed successfully');
@@ -202,7 +202,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
 
   const downloadFile = async (evidenceId: string, fileName: string) => {
     try {
-      const response = await api.get(`/api/audit-findings/evidence/${evidenceId}/download`, {
+      const response = await api.get(`ZAMS/api/audit-findings/evidence/${evidenceId}/download`, {
         responseType: 'blob'
       });
 
@@ -222,7 +222,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
 
   const refreshExistingFiles = async (findingId: string) => {
     try {
-      const response = await api.get(`/api/audit-findings/${findingId}`);
+      const response = await api.put(`ZAMS/api/audit-findings/${findingId}`);
       if (response.data.evidences && response.data.evidences.length > 0) {
         setExistingFiles(response.data.evidences);
       } else {
@@ -273,21 +273,32 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
     e.preventDefault();
 
     // Validation - Match exact backend model requirements
-    if (!formData.title || !formData.description || !formData.criteria ||
-        !formData.cause || !formData.impact || !formData.recommendation ||
-        !formData.amount || !formData.category_id || !formData.risk_level_id ||
-        !formData.risk_rating_id) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
+    // if (!formData.title || !formData.description || !formData.criteria ||
+    //     !formData.cause || !formData.impact || !formData.recommendation ||
+    //     !formData.amount || !formData.category_id || !formData.risk_level_id ||
+    //     !formData.risk_rating_id) {
+    //   toast.error('Please fill in all required fields');
+    //   return;
+    // }
+
+
+    if (!formData.title || !formData.description || !formData.criteria || 
+            !formData.cause || !formData.impact || !formData.recommendation ||
+             !formData.category_id || 
+            !formData.risk_rating_id) {
+          toast.error('Please fill in all required fields');
+          return;
+        }
+
+
 
     // IT Audit specific validation
-    if (isITAudit) {
-      if (!formData.vulnerability_id || !formData.compliance_gap_id || !formData.standard_id) {
-        toast.error('IT Audit findings require vulnerability, compliance gap, and standard fields');
-        return;
-      }
-    }
+    // if (isITAudit) {
+    //   if (!formData.vulnerability_id || !formData.compliance_gap_id || !formData.standard_id) {
+    //     toast.error('IT Audit findings require vulnerability, compliance gap, and standard fields');
+    //     return;
+    //   }
+    // }
 
     setLoading(true);
     try {
@@ -312,7 +323,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
       };
 
       console.log('Updating finding:', apiData);
-      const response = await api.put(`/api/audit-findings/${findingId}`, apiData);
+      const response = await api.put(`/ZAMS/api/audit-findings/${findingId}`, apiData);
 
       // Upload new files if any
       if (selectedFiles.length > 0) {
@@ -377,30 +388,49 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
           <CardContent className="space-y-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Finding Title *
+                Audit Finding*
               </label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                placeholder="Enter a descriptive title for the finding"
+                placeholder="Enter a descriptive Audit Finding for the finding"
                 required
               />
             </div>
 
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description *
+                Audit Finding Description *
               </label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Provide a detailed description of the finding"
+                placeholder="Provide a detailed Audit Finding description of the finding"
                 rows={3}
                 required
               />
             </div>
+
+
+             <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                Category *
+              </label>
+              <SearchableCombobox
+                options={createComboboxOptions(categories || [], 'category_name', ['category_description'])}
+                value={formData.category_id}
+                onValueChange={(value) => setFormData({...formData, category_id: value})}
+                placeholder="Select category"
+                searchPlaceholder="Search categories..."
+                emptyText="No categories found"
+                loading={referenceDataLoading}
+                disabled={referenceDataLoading}
+                required
+              />
+            </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -449,7 +479,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
 
               <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-                  Amount (ETB) *
+                  Amount (ETB)
                 </label>
                 <Input
                   id="amount"
@@ -464,22 +494,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
               </div>
             </div>
 
-            <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                Category *
-              </label>
-              <SearchableCombobox
-                options={createComboboxOptions(categories || [], 'category_name', ['category_description'])}
-                value={formData.category_id}
-                onValueChange={(value) => setFormData({...formData, category_id: value})}
-                placeholder="Select category"
-                searchPlaceholder="Search categories..."
-                emptyText="No categories found"
-                loading={referenceDataLoading}
-                disabled={referenceDataLoading}
-                required
-              />
-            </div>
+           
           </CardContent>
         </Card>
 
@@ -490,7 +505,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              {/* <div>
                 <label htmlFor="risk_level" className="block text-sm font-medium text-gray-700 mb-1">
                   Risk Level *
                 </label>
@@ -505,7 +520,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
                   disabled={referenceDataLoading}
                   required
                 />
-              </div>
+              </div> */}
 
               <div>
                 <label htmlFor="risk_rating" className="block text-sm font-medium text-gray-700 mb-1">
@@ -528,7 +543,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
         </Card>
 
         {/* IT-Specific Fields */}
-        {isITAudit && (
+        {/* {isITAudit && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -594,7 +609,7 @@ export const EditFinding = ({ user, findingId, onBack, onSave }: EditFindingProp
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
 
         {/* Recommendations & Timeline */}
         <Card>

@@ -82,19 +82,19 @@ export interface AnalyticsParams {
 class AnalyticsService {
   // Get audit findings by status
   async getAuditFindingsByStatus(params: AnalyticsParams = {}): Promise<StatusDistribution[]> {
-    const response = await api.get('/api/analytics/audit-findings/status', { params });
+    const response = await api.get('/ZAMS/api/analytics/audit-findings/status', { params });
     return response.data.data;
   }
 
   // Get audit findings by risk level
   async getAuditFindingsByRiskLevel(params: AnalyticsParams = {}): Promise<RiskLevelDistribution[]> {
-    const response = await api.get('/api/analytics/audit-findings/risk-level', { params });
+    const response = await api.get('/ZAMS/api/analytics/audit-findings/risk-level', { params });
     return response.data.data;
   }
 
   // Get audit findings by department
   async getAuditFindingsByDepartment(params: AnalyticsParams = {}): Promise<DepartmentDistribution[]> {
-    const response = await api.get('/api/analytics/audit-findings/department', { params });
+    const response = await api.get('/ZAMS/api/analytics/audit-findings/department', { params });
     return response.data.data;
   }
 
@@ -102,37 +102,37 @@ class AnalyticsService {
   async getAuditFindingsTrends(params?: AnalyticsParams & {
     groupBy?: 'day' | 'week' | 'month' | 'year';
   }): Promise<TrendData[]> {
-    const response = await api.get('/api/analytics/audit-findings/trends', { params });
+    const response = await api.get('/ZAMS/api/analytics/audit-findings/trends', { params });
     return response.data.data;
   }
 
   // Get action plan metrics
   async getActionPlanMetrics(params: AnalyticsParams = {}): Promise<ActionPlanMetrics[]> {
-    const response = await api.get('/api/analytics/action-plans/metrics', { params });
+    const response = await api.get('/ZAMS/api/analytics/action-plans/metrics', { params });
     return response.data.data;
   }
 
   // Get escalation trends
   async getEscalationTrends(params?: AnalyticsParams): Promise<EscalationTrend[]> {
-    const response = await api.get('/api/analytics/escalations/trends', { params });
+    const response = await api.get('/ZAMS/api/analytics/escalations/trends', { params });
     return response.data.data;
   }
 
   // Get user workload distribution
   async getUserWorkloadDistribution(params: AnalyticsParams = {}): Promise<WorkloadData[]> {
-    const response = await api.get('/api/analytics/users/workload', { params });
+    const response = await api.get('/ZAMS/api/analytics/users/workload', { params });
     return response.data.data;
   }
 
   // Get compliance gap analysis
   async getComplianceGapAnalysis(params: AnalyticsParams = {}): Promise<ComplianceGapData[]> {
-    const response = await api.get('/api/analytics/compliance/gaps', { params });
+    const response = await api.get('/ZAMS/api/analytics/compliance/gaps', { params });
     return response.data.data;
   }
 
   // Get timeline analytics
   async getTimelineAnalytics(params: AnalyticsParams = {}): Promise<TimelineAnalytics> {
-    const response = await api.get('/api/analytics/timeline/analytics', { params });
+    const response = await api.get('/ZAMS/api/analytics/timeline/analytics', { params });
     return response.data.data;
   }
 

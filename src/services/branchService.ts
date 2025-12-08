@@ -14,7 +14,7 @@ export const branchService = {
   // Get all available branches
   async getAllBranches(): Promise<BranchSelectionOption[]> {
     try {
-      const response = await api.get('/api/branches?limit=1000');
+      const response = await api.get('/ZAMS/api/branches?limit=1000');
       const branches: Branch[] = response.data.branches || [];
 
       if (!Array.isArray(branches)) {
@@ -45,7 +45,7 @@ export const branchService = {
   // Get user's associated branch (for Resident_Auditors)
   async getUserBranch(userId: string): Promise<BranchSelectionOption | null> {
     try {
-      const response = await api.get(`/api/users/${userId}/branch`);
+      const response = await api.get(`ZAMS/api/users/${userId}/branch`);
       const branch: Branch = response.data.branch;
 
       if (!branch) {
@@ -140,12 +140,21 @@ export const branchService = {
           };
 
         case 'IT_Auditors':
-          // Get all available branches
-          const allBranches = await this.getAllBranches();
+          // For IT Auditors, get branches assigned to them
+          const itAssignedBranches = await this.getInspectorAssignedBranches(user.id);
           return {
-            branches: allBranches,
-            isFixed: false
+            branches: itAssignedBranches,
+            isFixed: false,
+            defaultBranch: itAssignedBranches.length === 1 ? itAssignedBranches[0] : undefined
           };
+
+        // case 'IT_Auditors':
+        //   // Get all available branches
+        //   const allBranches = await this.getAllBranches();
+        //   return {
+        //     branches: allBranches,
+        //     isFixed: false
+        //   };
 
         default:
           // For other roles, return empty array

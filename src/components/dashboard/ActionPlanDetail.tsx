@@ -65,7 +65,7 @@ export const ActionPlanDetail = ({
   const fetchActionPlan = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/api/action-plans/${actionPlanId}`);
+      const response = await api.put(`ZAMS/api/action-plans/${actionPlanId}`);
       setActionPlan(response.data);
     } catch (error) {
       console.error('Error fetching action plan:', error);
@@ -79,7 +79,7 @@ export const ActionPlanDetail = ({
   const fetchAmendmentHistory = async () => {
     setAmendmentLoading(true);
     try {
-      const response = await api.get(`/api/action-plans/${actionPlanId}/history`);
+      const response = await api.put(`ZAMS/api/action-plans/${actionPlanId}/history`);
       setAmendmentHistory(response.data || []);
     } catch (error) {
       console.error('Error fetching amendment history:', error);
@@ -101,7 +101,7 @@ export const ActionPlanDetail = ({
     
     setActionLoading(true);
     try {
-      await api.delete(`/api/action-plans/${actionPlan.action_plan_id}`);
+      await api.delete(`ZAMS/api/action-plans/${actionPlan.action_plan_id}`);
       toast.success('Action plan deleted successfully');
       setDeleteDialogOpen(false);
       if (onBack) onBack();
@@ -120,7 +120,7 @@ export const ActionPlanDetail = ({
     
     setActionLoading(true);
     try {
-      await api.put(`/api/action-plans/${actionPlan.action_plan_id}/status`, { status: newStatus });
+      await api.put(`/ZAMS/api/action-plans/${actionPlan.action_plan_id}/status`, { status: newStatus });
       toast.success(`Action plan status updated to ${newStatus.replace('_', ' ')}`);
       fetchActionPlan(); // Refresh data
     } catch (error: any) {

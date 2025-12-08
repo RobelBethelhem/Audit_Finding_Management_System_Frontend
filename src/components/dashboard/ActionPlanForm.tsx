@@ -78,8 +78,8 @@ export const ActionPlanForm = ({ user, actionPlan, onSave, onCancel }: ActionPla
     setReferenceDataLoading(true);
     try {
       const [findingsRes, usersRes] = await Promise.all([
-        api.get('/api/audit-findings?limit=1000'),
-        api.get('/api/users?limit=1000')
+        api.get('/ZAMS/api/audit-findings?limit=1000'),
+        api.get('/ZAMS/api/users?limit=1000')
       ]);
 
       setAuditFindings(findingsRes.data?.data || findingsRes.data || []);
@@ -141,14 +141,14 @@ export const ActionPlanForm = ({ user, actionPlan, onSave, onCancel }: ActionPla
 
       let response;
       if (isEditing) {
-        response = await api.put(`/api/action-plans/${actionPlan.action_plan_id}`, submitData, {
+        response = await api.put(`/ZAMS/api/action-plans/${actionPlan.action_plan_id}`, submitData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
         toast.success('Action plan updated successfully');
       } else {
-        response = await api.post('/api/action-plans', submitData, {
+        response = await api.post('/ZAMS/api/action-plans', submitData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

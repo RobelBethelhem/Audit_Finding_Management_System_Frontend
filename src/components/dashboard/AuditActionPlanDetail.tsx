@@ -201,7 +201,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
   // Load all users for responsible persons selection
   const loadUsers = useCallback(async (): Promise<UserType[]> => {
     try {
-      const response = await api.get(`/auth/assignable-users?limit=1000&is_active=true`);
+      const response = await api.get(`ZAMS/api/auth/assignable-users?limit=1000&is_active=true`);
 
       // Extract users from the correct path in the response
       const rawUsers = response.data.data || response.data.users || response.data || [];
@@ -255,6 +255,19 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
     return true;
   };
 
+
+
+
+  // const isAmendRectificationButton = currentUser.role === 'Auditees'  || currentUser.role === 'Auditee_Supervisor' || currentUser.role === 'IT_Auditees' || currentUser.role === 'IT_Auditees_Supervisor' || currentUser.role === 'Inspection_Auditees'  || currentUser.role === 'Inspection_Auditees_Supervisor';
+  // const isApproveRectificationButton =  currentUser.role === 'Resident_Auditors' || currentUser.role === 'Audit_Supervisor'  || currentUser.role === 'IT_Auditors_Director' || currentUser.role === 'IT_Auditors_Supervisor' || currentUser.role === 'IT_Auditors'  || currentUser.role === 'Inspection_Auditors' || currentUser.role === 'Inspection_Auditors_Supervisor';
+  // const isAuditAddendumRectificationButton = currentUser.role === 'Resident_Auditors' || currentUser.role === 'Audit_Supervisor'  || currentUser.role === 'IT_Auditors_Director' || currentUser.role === 'IT_Auditors_Supervisor' || currentUser.role === 'IT_Auditors'  || currentUser.role === 'Inspection_Auditors' || currentUser.role === 'Inspection_Auditors_Supervisor';
+  // const isAmenButton = currentUser.role === 'Auditees'  || currentUser.role === 'Auditee_Supervisor' || currentUser.role === 'IT_Auditees' || currentUser.role === 'IT_Auditees_Supervisor' || currentUser.role === 'Inspection_Auditees'  || currentUser.role === 'Inspection_Auditees_Supervisor';
+  const isCreateActionPlanButton = currentUser.role === 'Auditees'  || currentUser.role === 'Auditee_Supervisor' || currentUser.role === 'IT_Auditees' || currentUser.role === 'IT_Auditees_Supervisor' || currentUser.role === 'Inspection_Auditees'  || currentUser.role === 'Inspection_Auditees_Supervisor';
+
+
+
+
+
   // Handle file selection
   const handleFileSelect = (files: FileList | null, type: 'evidence' | 'resource') => {
     if (!files) return;
@@ -291,7 +304,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
     setLoading(true);
     try {
       // First, fetch the finding data to get action plan IDs
-      const findingResponse = await api.get(`/api/audit-findings/${finding.id}`);
+      const findingResponse = await api.get(`ZAMS/api/audit-findings/${finding.id}`);
       const findingData = findingResponse.data;
 
       // Check if the finding has action plan data
@@ -299,7 +312,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
         const actionPlanId = findingData.ActionPlans[0].action_plan_id;
 
         // Fetch the full action plan details with files from the dedicated endpoint
-        const actionPlanResponse = await api.get(`/api/action-plans/${actionPlanId}`);
+        const actionPlanResponse = await api.get(`ZAMS/api/action-plans/${actionPlanId}`);
         console.log('Action Plan API Response:', actionPlanResponse.data);
         console.log('Due Date from API:', actionPlanResponse.data.due_date);
         setActionPlan(actionPlanResponse.data);
@@ -367,7 +380,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
         formData.append('evidence', selectedFile);
       }
 
-      await api.post(`/api/action-plans`, formData, {
+      await api.post(`/ZAMS/api/action-plans`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -432,7 +445,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
         formData.append('evidence', selectedFile);
       }
 
-      await api.put(`/api/action-plans/${actionPlan.action_plan_id}`, formData, {
+      await api.put(`/ZAMS/api/action-plans/${actionPlan.action_plan_id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -482,7 +495,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
         payload.reason = statusChangeReason;
       }
 
-      await api.put(`/api/action-plans/${actionPlan.action_plan_id}`, payload);
+      await api.put(`/ZAMS/api/action-plans/${actionPlan.action_plan_id}`, payload);
 
       const statusLabel = ACTION_PLAN_STATUSES.find(s => s.value === selectedStatus)?.label || selectedStatus;
       toast.success(`Action plan status updated to ${statusLabel}`);
@@ -536,7 +549,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
     if (!finding || !actionPlan) return;
 
     try {
-      const response = await api.put(`/api/action-plans/${actionPlan.action_plan_id}/progress`, data);
+      const response = await api.put(`/ZAMS/api/action-plans/${actionPlan.action_plan_id}/progress`, data);
 
       // Update the action plan data with new progress
       setActionPlan(prev => prev ? {
@@ -588,7 +601,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
         formData.append(`resource_files`, file);
       });
 
-      await api.put(`/api/action-plans/${actionPlan.action_plan_id}`, formData, {
+      await api.put(`/ZAMS/api/action-plans/${actionPlan.action_plan_id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -679,7 +692,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
         return;
       }
 
-      const response = await api.get(`/api/action-plans/evidence/${evidenceId}/download`, {
+      const response = await api.get(`ZAMS/api/action-plans/evidence/${evidenceId}/download`, {
         responseType: 'blob',
       });
 
@@ -709,7 +722,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
         return;
       }
 
-      const response = await api.get(`/api/action-plans/resource/${resourceId}/download`, {
+      const response = await api.get(`ZAMS/api/action-plans/resource/${resourceId}/download`, {
         responseType: 'blob',
       });
 
@@ -1016,7 +1029,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
               </CardContent>
             </Card>
           ) : (
-            canCreateActionPlan() && (
+            (canCreateActionPlan() && isCreateActionPlanButton) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -1173,7 +1186,7 @@ export const AuditActionPlanDetail: React.FC<AuditActionPlanDetailProps> = ({
                                   onClick={() => {
                                     // Create download handler for evidence
                                     if (evidence.file_path) {
-                                      const fileUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${evidence.file_path}`;
+                                      const fileUrl = `${import.meta.env.VITE_API_URL || 'https://aps2.zemenbank.com/ZAMS/api'}/${evidence.file_path}`;
                                       const link = document.createElement('a');
                                       link.href = fileUrl;
                                       link.download = evidence.file_name || 'evidence';

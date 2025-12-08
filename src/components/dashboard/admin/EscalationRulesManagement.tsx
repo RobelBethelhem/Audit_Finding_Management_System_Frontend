@@ -70,7 +70,7 @@ export const EscalationRulesManagement = ({ user }: EscalationRulesManagementPro
   const fetchRules = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/api/escalation-rules');
+      const response = await api.get('/ZAMS/api/escalation-rules');
       setRules(response.data || []);
     } catch (error) {
       console.error('Error fetching escalation rules:', error);
@@ -86,12 +86,12 @@ export const EscalationRulesManagement = ({ user }: EscalationRulesManagementPro
     setReferenceDataLoading(true);
     try {
       const [categoriesRes, riskLevelsRes, riskRatingsRes, vulnerabilitiesRes, complianceGapsRes, standardsRes] = await Promise.all([
-        api.get('/api/reference-data/categories?limit=1000'), // Get all items for dropdowns
-        api.get('/api/reference-data/risk-levels?limit=1000'),
-        api.get('/api/reference-data/risk-ratings?limit=1000'),
-        api.get('/api/reference-data/vulnerabilities?limit=1000'),
-        api.get('/api/reference-data/compliance-gaps?limit=1000'),
-        api.get('/api/reference-data/standards?limit=1000')
+        api.get('/ZAMS/api/reference-data/categories?limit=1000'), // Get all items for dropdowns
+        api.get('/ZAMS/api/reference-data/risk-levels?limit=1000'),
+        api.get('/ZAMS/api/reference-data/risk-ratings?limit=1000'),
+        api.get('/ZAMS/api/reference-data/vulnerabilities?limit=1000'),
+        api.get('/ZAMS/api/reference-data/compliance-gaps?limit=1000'),
+        api.get('/ZAMS/api/reference-data/standards?limit=1000')
       ]);
 
       // Handle paginated response format: { data: [...], total: ..., page: ... }
@@ -164,11 +164,11 @@ export const EscalationRulesManagement = ({ user }: EscalationRulesManagementPro
     try {
       if (editingRule) {
         // Update
-        await api.put(`/api/escalation-rules/${editingRule.id}`, formData);
+        await api.put(`/ZAMS/api/escalation-rules/${editingRule.id}`, formData);
         toast.success('Escalation rule updated successfully');
       } else {
         // Create
-        await api.post('/api/escalation-rules', formData);
+        await api.post('/ZAMS/api/escalation-rules', formData);
         toast.success('Escalation rule created successfully');
       }
       
@@ -185,7 +185,7 @@ export const EscalationRulesManagement = ({ user }: EscalationRulesManagementPro
     if (!ruleToDelete) return;
     
     try {
-      await api.delete(`/api/escalation-rules/${ruleToDelete.id}`);
+      await api.delete(`ZAMS/api/escalation-rules/${ruleToDelete.id}`);
       toast.success('Escalation rule deleted successfully');
       setDeleteDialogOpen(false);
       setRuleToDelete(null);
@@ -205,7 +205,7 @@ export const EscalationRulesManagement = ({ user }: EscalationRulesManagementPro
   // Toggle rule status
   const toggleRuleStatus = async (rule: EscalationRule) => {
     try {
-      await api.put(`/api/escalation-rules/${rule.id}`, {
+      await api.put(`/ZAMS/api/escalation-rules/${rule.id}`, {
         ...rule,
         is_active: !rule.is_active
       });

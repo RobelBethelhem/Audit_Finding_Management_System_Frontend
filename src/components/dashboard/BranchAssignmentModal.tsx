@@ -44,7 +44,7 @@ export const BranchAssignmentModal = ({
   const fetchAvailableBranches = async () => {
     setLoadingBranches(true);
     try {
-      const response = await api.get('/api/branch-assignments/available-branches');
+      const response = await api.get('/ZAMS/api/branch-assignments/available-branches');
       setBranches(response.data.branches || []);
     } catch (error) {
       console.error('Error fetching branches:', error);
@@ -62,7 +62,7 @@ export const BranchAssignmentModal = ({
 
     setLoading(true);
     try {
-      const response = await api.post('/api/branch-assignments/assign-to-branch', {
+      const response = await api.post('/ZAMS/api/branch-assignments/assign-to-branch', {
         finding_id: findingId,
         branch_id: selectedBranchId
       });

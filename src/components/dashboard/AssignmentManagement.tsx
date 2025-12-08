@@ -79,7 +79,7 @@ export const AssignmentManagement = ({ user }: AssignmentManagementProps) => {
         if (value) params.append(key, value.toString());
       });
 
-      const response = await api.get(`/api/audit-finding-assignments?${params.toString()}`);
+      const response = await api.put(`ZAMS/api/audit-finding-assignments?${params.toString()}`);
 
       // Handle both array response and paginated response
       let data: AuditFindingAssignment[];
@@ -122,8 +122,8 @@ export const AssignmentManagement = ({ user }: AssignmentManagementProps) => {
     setReferenceDataLoading(true);
     try {
       const [findingsRes, usersRes] = await Promise.all([
-        api.get('/api/audit-findings?limit=1000'),
-        api.get('/api/users?limit=1000')
+        api.get('/ZAMS/api/audit-findings?limit=1000'),
+        api.get('/ZAMS/api/users?limit=1000')
       ]);
 
       setAuditFindings(findingsRes.data?.data || findingsRes.data || []);
@@ -177,7 +177,7 @@ export const AssignmentManagement = ({ user }: AssignmentManagementProps) => {
     }
 
     try {
-      await api.post('/api/audit-finding-assignments', formData);
+      await api.post('/ZAMS/api/audit-finding-assignments', formData);
       toast.success('Assignment created successfully');
       setDialogOpen(false);
       fetchAssignments();
@@ -193,7 +193,7 @@ export const AssignmentManagement = ({ user }: AssignmentManagementProps) => {
     if (!assignmentToDelete) return;
     
     try {
-      await api.delete(`/api/audit-finding-assignments/${assignmentToDelete.id}`);
+      await api.delete(`ZAMS/api/audit-finding-assignments/${assignmentToDelete.id}`);
       toast.success('Assignment deleted successfully');
       setDeleteDialogOpen(false);
       setAssignmentToDelete(null);

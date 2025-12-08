@@ -321,9 +321,9 @@ export const InspectorBranchAssignmentManagement: React.FC<InspectorBranchAssign
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Inspector Branch Assignment</h1>
+          <h1 className="text-3xl font-bold text-gray-900"> Assignment</h1>
           <p className="text-gray-600 mt-1">
-            Manage inspector assignments to branches ({totalCount} total assignments)
+            Manage assignments ({totalCount} total assignments)
           </p>
         </div>
         
@@ -347,7 +347,7 @@ export const InspectorBranchAssignmentManagement: React.FC<InspectorBranchAssign
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Create Inspector Branch Assignment</DialogTitle>
+                <DialogTitle>Create Assignment</DialogTitle>
                 <DialogDescription>
                   Assign an inspector to a specific branch for audit oversight.
                 </DialogDescription>
@@ -496,7 +496,7 @@ export const InspectorBranchAssignmentManagement: React.FC<InspectorBranchAssign
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Inspector Branch Assignments
+            Assignments
           </CardTitle>
           <CardDescription>
             {filteredAssignments.length} of {totalCount} assignments

@@ -98,12 +98,12 @@ export const CreateFinding = ({ user }: CreateFindingProps) => {
     try {
       console.log('📡 Making API calls to reference data endpoints...');
       const [categoriesRes, riskLevelsRes, riskRatingsRes, vulnerabilitiesRes, complianceGapsRes, standardsRes] = await Promise.all([
-        api.get('/api/reference-data/categories?limit=1000'), // Get all items for dropdowns
-        api.get('/api/reference-data/risk-levels?limit=1000'),
-        api.get('/api/reference-data/risk-ratings?limit=1000'),
-        api.get('/api/reference-data/vulnerabilities?limit=1000'),
-        api.get('/api/reference-data/compliance-gaps?limit=1000'),
-        api.get('/api/reference-data/standards?limit=1000')
+        api.get('/ZAMS/api/reference-data/categories?limit=1000'), // Get all items for dropdowns
+        api.get('/ZAMS/api/reference-data/risk-levels?limit=1000'),
+        api.get('/ZAMS/api/reference-data/risk-ratings?limit=1000'),
+        api.get('/ZAMS/api/reference-data/vulnerabilities?limit=1000'),
+        api.get('/ZAMS/api/reference-data/compliance-gaps?limit=1000'),
+        api.get('/ZAMS/api/reference-data/standards?limit=1000')
       ]);
       console.log('✅ API calls completed successfully');
 
@@ -206,21 +206,29 @@ export const CreateFinding = ({ user }: CreateFindingProps) => {
     e.preventDefault();
 
     // Validation - Match exact backend model requirements
-    if (!formData.title || !formData.description || !formData.criteria ||
-        !formData.cause || !formData.impact || !formData.recommendation ||
-        !formData.amount || !formData.category_id || !formData.risk_level_id ||
-        !formData.risk_rating_id) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
+    // if (!formData.title || !formData.description || !formData.criteria ||
+    //     !formData.cause || !formData.impact || !formData.recommendation ||
+    //     !formData.amount || !formData.category_id || !formData.risk_level_id ||
+    //     !formData.risk_rating_id) {
+    //   toast.error('Please fill in all required fields');
+    //   return;
+    // }
+
+    if (!formData.title || !formData.description || !formData.criteria || 
+            !formData.cause || !formData.impact || !formData.recommendation ||
+             !formData.category_id || 
+            !formData.risk_rating_id) {
+          toast.error('Please fill in all required fields');
+          return;
+        }
 
     // IT Audit specific validation
-    if (isITAudit) {
-      if (!formData.vulnerability_id || !formData.compliance_gap_id || !formData.standard_id) {
-        toast.error('IT Audit findings require vulnerability, compliance gap, and standard fields');
-        return;
-      }
-    }
+    // if (isITAudit) {
+    //   if (!formData.vulnerability_id || !formData.compliance_gap_id || !formData.standard_id) {
+    //     toast.error('IT Audit findings require vulnerability, compliance gap, and standard fields');
+    //     return;
+    //   }
+    // }
 
     setLoading(true);
     try {
@@ -245,7 +253,7 @@ export const CreateFinding = ({ user }: CreateFindingProps) => {
       };
 
       console.log('Creating finding:', apiData);
-      const response = await api.post('/api/audit-findings', apiData);
+      const response = await api.post('/ZAMS/api/audit-findings', apiData);
 
       // Upload files if any
       if (selectedFiles.length > 0) {

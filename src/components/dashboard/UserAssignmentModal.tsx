@@ -50,7 +50,7 @@ export const UserAssignmentModal = ({
   const fetchAssignableUsers = async () => {
     setLoadingUsers(true);
     try {
-      const response = await api.get(`/api/branch-assignments/assignable-users/${branchId}`);
+      const response = await api.put(`ZAMS/api/branch-assignments/assignable-users/${branchId}`);
       setUsers(response.data.users || []);
     } catch (error) {
       console.error('Error fetching assignable users:', error);
@@ -68,7 +68,7 @@ export const UserAssignmentModal = ({
 
     setLoading(true);
     try {
-      const response = await api.post('/api/branch-assignments/assign-to-user', {
+      const response = await api.post('/ZAMS/api/branch-assignments/assign-to-user', {
         finding_id: findingId,
         assigned_to_id: selectedUserId
       });

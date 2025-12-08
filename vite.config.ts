@@ -3,9 +3,18 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: '/ZAMS/',
   server: {
+    proxy: {
+      '/ZAMS/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ZAMS\/api/, '/api'),
+      },
+    },
     host: "::",
     port: 8080,
   },
@@ -19,4 +28,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    outDir: 'dist',
+  }
 }));

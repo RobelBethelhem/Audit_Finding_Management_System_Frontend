@@ -93,6 +93,7 @@ export interface AuditAmendmentHistory {
 export interface AuditFinding {
   id: string;
   title: string;
+  reference_number: string; 
   description: string;
   criteria: string;
   cause: string;
