@@ -20,6 +20,7 @@ import {
   ComplianceGap,
   RelevantStandard
 } from '@/types/referenceData';
+import { CURRENCY_OPTIONS, CurrencyCode } from '@/types/auditFinding';
 
 interface CreateFindingProps {
   user: User;
@@ -38,6 +39,7 @@ export const CreateFinding = ({ user }: CreateFindingProps) => {
     impact: '',
     recommendation: '',
     amount: 0,
+    currency: 'ETB' as CurrencyCode,
     category_id: '',
     risk_level_id: '',
     risk_rating_id: '',
@@ -241,6 +243,7 @@ export const CreateFinding = ({ user }: CreateFindingProps) => {
         impact: formData.impact,
         recommendation: formData.recommendation,
         amount: parseFloat(formData.amount.toString()) || 0,
+        currency: formData.currency,
         category_id: formData.category_id,
         risk_level_id: formData.risk_level_id,
         risk_rating_id: formData.risk_rating_id,
@@ -272,6 +275,7 @@ export const CreateFinding = ({ user }: CreateFindingProps) => {
         impact: '',
         recommendation: '',
         amount: 0,
+        currency: 'ETB' as CurrencyCode,
         category_id: '',
         risk_level_id: '',
         risk_rating_id: '',
@@ -395,18 +399,36 @@ export const CreateFinding = ({ user }: CreateFindingProps) => {
 
               <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-                  Amount (ETB) *
+                  Amount *
                 </label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value) || 0})}
-                  placeholder="Financial amount involved"
-                  required
-                />
+                <div className="flex gap-2">
+                  <Select
+                    value={formData.currency}
+                    onValueChange={(value: CurrencyCode) => setFormData({...formData, currency: value})}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue placeholder="Currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRENCY_OPTIONS.map((currency) => (
+                        <SelectItem key={currency.value} value={currency.value}>
+                          {currency.symbol} {currency.value}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value) || 0})}
+                    placeholder="Financial amount involved"
+                    className="flex-1"
+                    required
+                  />
+                </div>
               </div>
             </div>
 

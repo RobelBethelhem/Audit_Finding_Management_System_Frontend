@@ -89,17 +89,28 @@ export interface AuditAmendmentHistory {
   riskRating?: RiskRating;
 }
 
+// Currency options
+export const CURRENCY_OPTIONS = [
+  { value: 'ETB', label: 'ETB - Ethiopian Birr', symbol: 'ETB' },
+  { value: 'USD', label: 'USD - US Dollar', symbol: '$' },
+  { value: 'GBP', label: 'GBP - British Pound', symbol: '£' },
+  { value: 'EUR', label: 'EUR - Euro', symbol: '€' }
+] as const;
+
+export type CurrencyCode = 'ETB' | 'USD' | 'GBP' | 'EUR';
+
 // Main Audit Finding interface
 export interface AuditFinding {
   id: string;
   title: string;
-  reference_number: string; 
+  reference_number: string;
   description: string;
   criteria: string;
   cause: string;
   impact: string;
   recommendation: string;
   amount: number;
+  currency: CurrencyCode;
   risk_level_id: string;
   category_id: string;
   risk_rating_id: string;
@@ -165,6 +176,7 @@ export interface AuditFindingFormData {
   impact: string;
   recommendation: string;
   amount: number;
+  currency: CurrencyCode;
   risk_level_id: string;
   category_id: string;
   risk_rating_id: string;
@@ -256,6 +268,9 @@ export const getRolePermissions = (userRole: string, userDepartment: string): Ro
     'Inspection_Auditors_Supervisor', 'Inspection_Auditors_Director'
   ];
 
+  // Cross-department director roles - These directors have access across all departments
+  const crossDepartmentDirectorRoles = ['Audit_Director'];
+
   // Admin has full access to everything
   if (userRole === 'Admin') {
     return {
@@ -268,6 +283,21 @@ export const getRolePermissions = (userRole: string, userDepartment: string): Ro
       canAmendRectification: true,
       canCreateActionPlan: true,
       requiresITFields: userDepartment === 'IT_Audit'
+    };
+  }
+
+  // Audit_Director has cross-department access (like Admin but without delete)
+  if (crossDepartmentDirectorRoles.includes(userRole)) {
+    return {
+      canCreate: true,
+      canEdit: true,
+      canDelete: false,
+      canAssign: true,
+      canApproveRectification: true,
+      canInitiateRectification: true,
+      canAmendRectification: true,
+      canCreateActionPlan: true,
+      requiresITFields: false // Audit_Director can work with all department types
     };
   }
 
@@ -355,8 +385,12 @@ export const getFindingPermissions = (
     'Inspection_Auditors_Supervisor', 'Inspection_Auditors_Director'
   ];
 
+  // Cross-department director roles - have access across all departments
+  const crossDepartmentDirectorRoles = ['Audit_Director'];
+
   // Basic checks
   const isAdmin = user.role === 'Admin';
+  const isAuditDirector = crossDepartmentDirectorRoles.includes(user.role);
   const isCreator = finding.created_by_id === user.id;
   const isSameDepartment = finding.createdBy?.department === user.department;
 
@@ -376,8 +410,9 @@ export const getFindingPermissions = (
   ) || false;
 
   // Edit/Delete permissions: Base role permissions + finding-specific checks
+  // Audit_Director has cross-department access (can edit any finding)
   const canEditThisFinding = basePermissions.canEdit && (
-    isAdmin || isCreator ||
+    isAdmin || isAuditDirector || isCreator ||
     (supervisorDirectorRoles.includes(user.role) && isSameDepartment)
   );
 
@@ -387,32 +422,37 @@ export const getFindingPermissions = (
   );
 
   // Assignment permissions: Base role permissions + finding-specific checks
+  // Audit_Director can assign across all departments
   const canAssign = basePermissions.canAssign && (
-    isAdmin ||
+    isAdmin || isAuditDirector ||
     (supervisorDirectorRoles.includes(user.role) && isSameDepartment)
   );
 
   // Rectification approval permissions: Base role permissions + finding-specific checks
+  // Audit_Director can approve rectifications across all departments
   const canApproveThisRectification = basePermissions.canApproveRectification && (
-    isAdmin || isCreator ||
+    isAdmin || isAuditDirector || isCreator ||
     (supervisorDirectorRoles.includes(user.role) && isSameDepartment)
   );
 
   // Rectification initiation permissions: Base role permissions + finding-specific checks
+  // Audit_Director can initiate rectifications across all departments
   const canInitiateThisRectification = basePermissions.canInitiateRectification && (
-    isAdmin || isAssigned || isEscalated || isActionPlanResponsible ||
+    isAdmin || isAuditDirector || isAssigned || isEscalated || isActionPlanResponsible ||
     (auditorRoles.includes(user.role) && isSameDepartment)
   );
 
   // Rectification amendment permissions: Base role permissions + finding-specific checks
+  // Audit_Director can amend rectifications across all departments
   const canAmendThisRectification = basePermissions.canAmendRectification && (
-    isAdmin || isAssigned || isEscalated || isActionPlanResponsible ||
+    isAdmin || isAuditDirector || isAssigned || isEscalated || isActionPlanResponsible ||
     (auditeeRoles.includes(user.role) && isSameDepartment)
   );
 
   // Action plan creation permissions: Base role permissions + finding-specific checks
+  // Audit_Director can create action plans across all departments
   const canCreateActionPlanForThis = basePermissions.canCreateActionPlan && (
-    isAdmin || isAssigned || isEscalated || isActionPlanResponsible ||
+    isAdmin || isAuditDirector || isAssigned || isEscalated || isActionPlanResponsible ||
     (auditeeRoles.includes(user.role) && isSameDepartment) ||
     (supervisorDirectorRoles.includes(user.role) && isSameDepartment)
   );

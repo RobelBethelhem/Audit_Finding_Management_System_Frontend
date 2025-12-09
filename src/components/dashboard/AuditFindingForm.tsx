@@ -9,11 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SearchableCombobox, createComboboxOptions } from '@/components/ui/searchable-combobox';
 import { toast } from 'sonner';
 import { Save, ArrowLeft, Upload, File, X, Download } from 'lucide-react';
-import { 
-  AuditFinding, 
+import {
+  AuditFinding,
   AuditFindingFormData,
   AUDIT_FINDING_STATUSES,
-  getRolePermissions
+  getRolePermissions,
+  CURRENCY_OPTIONS,
+  CurrencyCode
 } from '@/types/auditFinding';
 import { 
   Category, 
@@ -89,6 +91,7 @@ export const AuditFindingForm = ({
     impact: '',
     recommendation: '',
     amount: 0,
+    currency: 'ETB' as CurrencyCode,
     risk_level_id: '',
     category_id: '',
     risk_rating_id: '',
@@ -130,6 +133,7 @@ export const AuditFindingForm = ({
         impact: finding.impact,
         recommendation: finding.recommendation,
         amount: finding.amount,
+        currency: (finding.currency || 'ETB') as CurrencyCode,
         risk_level_id: finding.risk_level_id,
         category_id: finding.category_id,
         risk_rating_id: finding.risk_rating_id,
@@ -150,6 +154,7 @@ export const AuditFindingForm = ({
         impact: '',
         recommendation: '',
         amount: 0,
+        currency: 'ETB' as CurrencyCode,
         risk_level_id: '',
         category_id: '',
         risk_rating_id: '',
@@ -824,17 +829,35 @@ export const AuditFindingForm = ({
 
 
                   <div>
-                  <Label htmlFor="amount">Amount (ETB) </Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={formData.amount}
-                    onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
-                    placeholder="Enter amount"
-                    required
-                  />
+                  <Label htmlFor="amount">Amount</Label>
+                  <div className="flex gap-2">
+                    <Select
+                      value={formData.currency}
+                      onValueChange={(value: CurrencyCode) => handleInputChange('currency', value)}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue placeholder="Currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CURRENCY_OPTIONS.map((currency) => (
+                          <SelectItem key={currency.value} value={currency.value}>
+                            {currency.symbol} {currency.value}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      id="amount"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={formData.amount}
+                      onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                      placeholder="Enter amount"
+                      className="flex-1"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
             </div>
