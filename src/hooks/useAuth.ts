@@ -295,6 +295,8 @@ export const useAuth = () => {
       localStorage.removeItem('login_time');
       delete api.defaults.headers.common['Authorization'];
       setUser(null);
+      // Redirect to /ZAMS after logout
+      window.location.href = '/ZAMS';
     }
   };
 
