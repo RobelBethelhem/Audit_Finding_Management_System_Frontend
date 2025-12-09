@@ -1431,7 +1431,9 @@ import {
 import {
   AuditFinding,
   AUDIT_FINDING_STATUSES,
-  RECTIFICATION_STATUSES
+  RECTIFICATION_STATUSES,
+  CURRENCY_OPTIONS,
+  CurrencyCode
 } from '@/types/auditFinding';
 import { User as UserType } from '@/types/user';
 import { BranchAssignmentModal } from './BranchAssignmentModal';
@@ -1652,13 +1654,18 @@ export const AuditFindingDetail = ({
     );
   };
 
-  // Format currency with animation-ready output
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'ETB',
-      minimumFractionDigits: 0
+  // Format currency with dynamic currency code
+  const formatCurrency = (amount: number, currencyCode: CurrencyCode = 'ETB') => {
+    const currencyOption = CURRENCY_OPTIONS.find(c => c.value === currencyCode);
+    const symbol = currencyOption?.symbol || currencyCode;
+
+    // Format number with commas
+    const formattedAmount = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
     }).format(amount);
+
+    return `${symbol} ${formattedAmount}`;
   };
 
   // Format date
@@ -2360,7 +2367,7 @@ export const AuditFindingDetail = ({
                                     <div className="text-gray-600 font-semibold mb-2">Amendment Details</div>
                                     <div className="space-y-1">
                                       <div><span className="font-medium">Status:</span> {amendment.status}</div>
-                                      <div><span className="font-medium">Amount:</span> {formatCurrency(Number(amendment.amount))}</div>
+                                      <div><span className="font-medium">Amount:</span> {formatCurrency(Number(amendment.amount), finding?.currency as CurrencyCode)}</div>
                                     </div>
                                   </div>
                                   <div className="p-3 bg-gray-50 rounded-lg">
@@ -2394,10 +2401,10 @@ export const AuditFindingDetail = ({
     </CardHeader>
     <CardContent className="p-6 space-y-4">
       {[
-        { 
-          icon: <DollarSign className="h-5 w-5" />, 
-          label: 'Amount', 
-          value: formatCurrency(finding.amount),
+        {
+          icon: <DollarSign className="h-5 w-5" />,
+          label: 'Amount',
+          value: formatCurrency(finding.amount, finding.currency as CurrencyCode),
           color: 'from-green-400 to-emerald-500'
         },
         { 

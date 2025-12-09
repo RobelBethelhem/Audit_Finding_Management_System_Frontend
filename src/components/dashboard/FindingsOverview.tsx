@@ -2284,7 +2284,7 @@ import {
 
 import { motion, AnimatePresence } from 'framer-motion';
 
-
+import { CURRENCY_OPTIONS, CurrencyCode } from '@/types/auditFinding';
 
 interface FindingsOverviewProps {
 
@@ -2309,6 +2309,8 @@ interface AuditFinding {
   category_id: string;
 
   amount: number;
+
+  currency?: CurrencyCode;
 
   due_date: string;
 
@@ -2518,6 +2520,9 @@ const ITEMS_PER_PAGE = 4;
 
   const [branchStats, setBranchStats] = useState<{ name: string; count: number }[]>([]);
 
+  // Totals grouped by currency
+  const [currencyTotals, setCurrencyTotals] = useState<Record<string, number>>({});
+
   const [statusDistribution, setStatusDistribution] = useState<{ status: string; count: number; color: string }[]>([]);
 
 
@@ -2693,10 +2698,15 @@ const paginatedBranches = branchStats.slice(
     
 
     // Total amount
-
     const totalAmount = findingsData.reduce((sum, f) => sum + (f.amount || 0), 0);
 
-    
+    // Calculate totals by currency
+    const currencyTotalsData: Record<string, number> = {};
+    findingsData.forEach(f => {
+      const currency = f.currency || 'ETB';
+      currencyTotalsData[currency] = (currencyTotalsData[currency] || 0) + (f.amount || 0);
+    });
+    setCurrencyTotals(currencyTotalsData);
 
     // Category statistics
 
@@ -3006,22 +3016,27 @@ const paginatedBranches = branchStats.slice(
 
 
 
-  // Format currency
+  // Format currency with dynamic currency code
+  const formatCurrency = (amount: number, currencyCode: CurrencyCode = 'ETB') => {
+    const currencyOption = CURRENCY_OPTIONS.find(c => c.value === currencyCode);
+    const symbol = currencyOption?.symbol || currencyCode;
 
-  const formatCurrency = (amount: number) => {
-
-    return new Intl.NumberFormat('en-US', {
-
-      style: 'currency',
-
-      currency: 'ETB',
-
+    const formattedAmount = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
-
       maximumFractionDigits: 0
-
     }).format(amount);
 
+    return `${symbol} ${formattedAmount}`;
+  };
+
+  // Calculate totals grouped by currency
+  const calculateTotalsByCurrency = (findingsData: AuditFinding[]) => {
+    const totals: Record<string, number> = {};
+    findingsData.forEach(f => {
+      const currency = f.currency || 'ETB';
+      totals[currency] = (totals[currency] || 0) + (f.amount || 0);
+    });
+    return totals;
   };
 
 
@@ -4280,32 +4295,37 @@ const paginatedBranches = branchStats.slice(
 
 
 
-              {/* Total Amount */}
-
+              {/* Total Amount by Currency */}
               <div className="mt-6 pt-6 border-t">
-
-                <div className="flex items-center justify-between">
-
+                <div className="flex flex-col gap-2">
                   <span className="text-sm font-medium text-gray-600">Total Amount at Risk</span>
-
-                  <motion.span 
-
-                    initial={{ opacity: 0, scale: 0.5 }}
-
-                    animate={{ opacity: 1, scale: 1 }}
-
-                    transition={{ delay: 0.8, duration: 0.5 }}
-
-                    className="text-xl font-bold text-red-600"
-
-                  >
-
-                    {formatCurrency(animatedStats.totalAmount)}
-
-                  </motion.span>
-
+                  <div className="flex flex-wrap gap-3">
+                    {Object.entries(currencyTotals).length > 0 ? (
+                      Object.entries(currencyTotals).map(([currency, amount], index) => (
+                        <motion.div
+                          key={currency}
+                          initial={{ opacity: 0, scale: 0.5 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
+                          className="flex items-center gap-1 px-3 py-1 bg-red-50 rounded-lg"
+                        >
+                          <span className="text-lg font-bold text-red-600">
+                            {formatCurrency(amount, currency as CurrencyCode)}
+                          </span>
+                        </motion.div>
+                      ))
+                    ) : (
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.8, duration: 0.5 }}
+                        className="text-lg font-bold text-red-600"
+                      >
+                        {formatCurrency(0, 'ETB')}
+                      </motion.span>
+                    )}
+                  </div>
                 </div>
-
               </div>
 
             </CardContent>

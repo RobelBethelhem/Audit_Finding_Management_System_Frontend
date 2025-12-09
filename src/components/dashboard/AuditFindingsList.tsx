@@ -526,7 +526,11 @@ import {
 
   AuditFindingListResponse,
 
-  AUDIT_FINDING_STATUSES
+  AUDIT_FINDING_STATUSES,
+
+  CURRENCY_OPTIONS,
+
+  CurrencyCode
 
 } from '@/types/auditFinding';
 
@@ -906,20 +910,18 @@ export const AuditFindingsList = ({
 
 
 
-  // Format currency
+  // Format currency with dynamic currency code
+  const formatCurrency = (amount: number, currencyCode: CurrencyCode = 'ETB') => {
+    const currencyOption = CURRENCY_OPTIONS.find(c => c.value === currencyCode);
+    const symbol = currencyOption?.symbol || currencyCode;
 
-  const formatCurrency = (amount: number) => {
-
-    return new Intl.NumberFormat('en-US', {
-
-      style: 'currency',
-
-      currency: 'ETB',
-
-      minimumFractionDigits: 0
-
+    // Format number with commas
+    const formattedAmount = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
     }).format(amount);
 
+    return `${symbol} ${formattedAmount}`;
   };
 
 
@@ -1370,7 +1372,7 @@ export const AuditFindingsList = ({
 
                       <TableCell>{finding.RiskRating?.risk_rating_name || '-'}</TableCell>
 
-                      <TableCell>{formatCurrency(finding.amount)}</TableCell>
+                      <TableCell>{formatCurrency(finding.amount, finding.currency as CurrencyCode)}</TableCell>
 
                       <TableCell>{finding.createdBy?.username || '-'}</TableCell>
 
